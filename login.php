@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - My To-Do App</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gray-200">
     <div class="flex w-full max-w-5xl rounded-3xl shadow-lg overflow-hidden">
@@ -22,6 +23,7 @@
             if ($conn->connect_error) {
                 die("Connection failed: " . $conn->connect_error);     
             }
+
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $username = $_POST['username'];
                 $password = $_POST['password'];
@@ -31,21 +33,51 @@
                 $stmt->execute();
                 
                 $result = $stmt->get_result();
+                $message = '';
+                $icon = '';
+                $redirectUrl = 'home.php'; // Update this to your actual homepage URL
 
                 if ($result->num_rows > 0) {
                     $user = $result->fetch_assoc();
 
-                    if(password_verify($password, $user["password"])) {
-                        echo "<p class='mb-4 text-green-600 text-center font-semibold'>Login successful!</p>";
+                    if (password_verify($password, $user["password"])) {
+                        $message = 'Login successful!';
+                        $icon = 'success';
+                        // Trigger SweetAlert with redirect
+                        echo "<script>
+                            Swal.fire({
+                                title: '" . addslashes($message) . "',
+                                icon: '" . $icon . "',
+                                confirmButtonText: 'Okay'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '" . $redirectUrl . "';
+                                }
+                            });
+                        </script>";
                     } else {
-                        echo "<p class='mb-4 text-red-600 text-center font-semibold'>Invalid username or password</p>";
+                        $message = 'Invalid username or password';
+                        $icon = 'error';
                     }
-                    }else{
-                        echo "<p class='mb-4 text-red-600 text-center font-semibold'>Invalid username or password</p>";
-                    }
-                    $stmt->close();
+                } else {
+                    $message = 'Invalid username or password';
+                    $icon = 'error';
                 }
+
+                $stmt->close();
                 $conn->close();
+
+                // Trigger SweetAlert for error cases
+                if ($icon === 'error') {
+                    echo "<script>
+                        Swal.fire({
+                            title: '" . addslashes($message) . "',
+                            icon: '" . $icon . "',
+                            confirmButtonText: 'Okay'
+                        });
+                    </script>";
+                }
+            }
             ?>
 
             <form action="" method="POST">
