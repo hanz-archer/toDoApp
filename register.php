@@ -10,19 +10,43 @@
     <div class="flex w-full max-w-5xl rounded-3xl shadow-lg overflow-hidden">
         <div class="flex-shrink-0 w-1/2 p-10 bg-white" style="min-height: 500px;">
             <h2 class="mb-6 text-4xl font-extrabold text-center text-gray-800">Register</h2>
-            
             <?php
+            // Database connection details
+            $servername = "localhost";
+            $username = "root"; // Change if necessary
+            $password = ""; // Default is often empty for XAMPP
+            $dbname = "todo_app";
+
+            // Create connection
+            $conn = new mysqli($servername, $username, $password, $dbname);
+
+            // Check connection
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+
+            // Handle form submission
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $username = $_POST['username'];
                 $email = $_POST['email'];
                 $password = $_POST['password'];
 
-                if (!empty($username) && !empty($email) && !empty($password)) {
-                    echo "<p class='mb-4 text-green-600 text-center font-semibold'>Registration successful! You can now log in.</p>";
+                // Prepare and bind
+                $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $username, $email, $password);
+
+                if ($stmt->execute()) {
+                    echo "<p class='mb-4 text-green-600 text-center font-semibold'>Registration Successful!</p>";
                 } else {
-                    echo "<p class='mb-4 text-red-600 text-center font-semibold'>Please fill in all fields.</p>";
+                    echo "<p class='mb-4 text-red-600 text-center font-semibold'>Error: " . $stmt->error . "</p>";
                 }
+
+                // Close statement
+                $stmt->close();  
             }
+
+            // Close connection
+            $conn->close();
             ?>
 
             <form action="" method="POST">
