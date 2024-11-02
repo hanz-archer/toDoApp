@@ -11,10 +11,10 @@
         <div class="flex-shrink-0 w-1/2 p-10 bg-white" style="min-height: 500px;">
             <h2 class="mb-6 text-4xl font-extrabold text-center text-gray-800">Register</h2>
             <?php
-            // Database connection details
+            // Database connection 
             $servername = "localhost";
-            $username = "root"; // Change if necessary
-            $password = ""; // Default is often empty for XAMPP
+            $username = "root";
+            $password = "";
             $dbname = "todo_app";
 
             // Create connection
