@@ -32,8 +32,9 @@
                 $password = $_POST['password'];
 
                 // Prepare and bind
+                $passwordHash = password_hash($password, PASSWORD_BCRYPT);
                 $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-                $stmt->bind_param("sss", $username, $email, $password);
+                $stmt->bind_param("sss", $username, $email, $passwordHash);
 
                 if ($stmt->execute()) {
                     echo "<p class='mb-4 text-green-600 text-center font-semibold'>Registration Successful!</p>";

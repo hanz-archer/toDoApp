@@ -12,16 +12,40 @@
             <h2 class="mb-6 text-4xl font-extrabold text-center text-gray-800">Log In</h2>
 
             <?php
+            // Database connection 
+            $servername = "localhost";
+            $username = "root";
+            $password = "";
+            $dbname = "todo_app";
+
+            $conn = new mysqli($servername, $username, $password, $dbname);
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);     
+            }
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $username = $_POST['username'];
                 $password = $_POST['password'];
+                
+                $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+                $stmt->bind_param("ss", $username, $username);
+                $stmt->execute();
+                
+                $result = $stmt->get_result();
 
-                if ($username == 'user' && $password == 'password') {
-                    echo "<p class='mb-4 text-green-600 text-center font-semibold'>Login successful!</p>";
-                } else {
-                    echo "<p class='mb-4 text-red-600 text-center font-semibold'>Invalid username or password</p>";
+                if ($result->num_rows > 0) {
+                    $user = $result->fetch_assoc();
+
+                    if(password_verify($password, $user["password"])) {
+                        echo "<p class='mb-4 text-green-600 text-center font-semibold'>Login successful!</p>";
+                    } else {
+                        echo "<p class='mb-4 text-red-600 text-center font-semibold'>Invalid username or password</p>";
+                    }
+                    }else{
+                        echo "<p class='mb-4 text-red-600 text-center font-semibold'>Invalid username or password</p>";
+                    }
+                    $stmt->close();
                 }
-            }
+                $conn->close();
             ?>
 
             <form action="" method="POST">
