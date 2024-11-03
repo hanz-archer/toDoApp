@@ -35,7 +35,7 @@
                 $result = $stmt->get_result();
                 $message = '';
                 $icon = '';
-                $redirectUrl = 'home.php'; // Update this to your actual homepage URL
+                $redirectUrl = 'home.php';
 
                 if ($result->num_rows > 0) {
                     $user = $result->fetch_assoc();
@@ -67,7 +67,6 @@
                 $stmt->close();
                 $conn->close();
 
-                // Trigger SweetAlert for error cases
                 if ($icon === 'error') {
                     echo "<script>
                         Swal.fire({
