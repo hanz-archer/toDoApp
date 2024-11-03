@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sticky Wall</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <?php include 'db.php'; ?>
     <script>
         // JavaScript to handle sidebar toggle on mobile
         function toggleSidebar() {
@@ -13,7 +14,6 @@
     </script>
 </head>
 <body class="bg-gray-100 font-sans text-gray-900">
-    <!-- Mobile Header with Sidebar Toggle Button -->
     <header class="bg-white shadow-md fixed w-full top-0 z-20 md:hidden">
         <div class="flex items-center justify-between px-6 py-4">
             <h1 class="text-2xl font-semibold">My To-Do's</h1>
@@ -24,8 +24,6 @@
             </button>
         </div>
     </header>
-
-    <!-- Sidebar -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg px-6 py-8 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-10">
         <div class="flex items-center justify-between mb-8">
             <h2 class="text-2xl font-semibold">My To-Do's</h2>
@@ -79,46 +77,33 @@
             <a href="login.php" class="block text-gray-800 hover:text-blue-500 transition">Sign out</a>
         </div>
     </aside>
-
-    <!-- Main Content -->
     <main class="md:ml-64 p-10 pt-20 md:pt-10">
         <h1 class="text-4xl font-semibold mb-6">Sticky Wall</h1>
+                <form method="POST" action="create.php" class="mb-8">
+            <input type="text" name="title" placeholder="Note Title" required class="p-2 rounded-lg border mb-4 w-full">
+            <textarea name="content" placeholder="Note Content" required class="p-2 rounded-lg border mb-4 w-full"></textarea>
+            <select name="color" class="p-2 rounded-lg border mb-4 w-full" required>
+                <option value="bg-yellow-100">Yellow</option>
+                <option value="bg-blue-100">Blue</option>
+                <option value="bg-pink-100">Pink</option>
+                <option value="bg-orange-100">Orange</option>
+            </select>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Note</button>
+        </form>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Sticky Note Card -->
-            <div class="p-6 rounded-lg shadow-lg bg-yellow-100 hover:shadow-xl transition-shadow">
-                <h2 class="text-lg font-semibold text-yellow-800 mb-2">Social Media</h2>
-                <ul class="text-gray-700 text-sm space-y-1">
-                    <li>- Plan social content</li>
-                    <li>- Build content calendar</li>
-                    <li>- Plan promotion and distribution</li>
-                </ul>
-            </div>
-            <div class="p-6 rounded-lg shadow-lg bg-blue-100 hover:shadow-xl transition-shadow">
-                <h2 class="text-lg font-semibold text-blue-800 mb-2">Content Strategy</h2>
-                <p class="text-gray-700 text-sm">
-                    Need time for insights (goals, personas, budget), then focus on team assembly and brainstorm tooling.
-                </p>
-            </div>
-            <div class="p-6 rounded-lg shadow-lg bg-pink-100 hover:shadow-xl transition-shadow">
-                <h2 class="text-lg font-semibold text-pink-800 mb-2">Email A/B Tests</h2>
-                <ul class="text-gray-700 text-sm space-y-1">
-                    <li>- Subject lines</li>
-                    <li>- Sender</li>
-                    <li>- CTA</li>
-                    <li>- Sending times</li>
-                </ul>
-            </div>
-            <div class="p-6 rounded-lg shadow-lg bg-orange-100 hover:shadow-xl transition-shadow">
-                <h2 class="text-lg font-semibold text-orange-800 mb-2">Banner Ads</h2>
-                <ul class="text-gray-700 text-sm space-y-1">
-                    <li>- Sizing matters</li>
-                    <li>- Choose distinctive imagery</li>
-                    <li>- Landing page must match the display ad</li>
-                </ul>
-            </div>
-            <div class="p-6 rounded-lg shadow-lg bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors cursor-pointer">
-                <span class="text-gray-600 text-4xl font-semibold">+</span>
-            </div>
+            <?php
+                $stmt = $conn->query("SELECT * FROM sticky_notes ORDER BY created_at DESC");
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    echo "<div class='p-6 rounded-lg shadow-lg {$row['color']} hover:shadow-xl transition-shadow'>";
+                    echo "<h2 class='text-lg font-semibold text-gray-800 mb-2'>{$row['title']}</h2>";
+                    echo "<p class='text-gray-700 text-sm'>{$row['content']}</p>";
+                    echo "<div class='flex space-x-2 mt-4'>";
+                    echo "<a href='edit.php?id={$row['id']}' class='text-blue-600'>Edit</a>";
+                    echo "<a href='delete.php?id={$row['id']}' class='text-red-600'>Delete</a>";
+                    echo "</div>";
+                    echo "</div>";
+                }
+            ?>
         </div>
     </main>
 </body>

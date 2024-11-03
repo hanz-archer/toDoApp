@@ -1,12 +1,13 @@
 <?php
 $servername = "localhost";
-$username = ""; 
+$username = "root"; 
 $password = "";
 $dbname = "todo_app";
 
-try{
-    $conn =  new PDO("mysql:host=$servername,dbname=$dbname");
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-}catch(PDOException $e){
-    echo "Connection Failed".$e->getMessage();
+} catch (PDOException $e) {
+    echo "Connection failed: " . $e->getMessage();
+    $conn = null; // Set $conn to null if the connection fails
 }
